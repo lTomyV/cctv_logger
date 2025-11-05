@@ -35,11 +35,12 @@ except (FileNotFoundError, KeyError) as err:
     )
 
 # --- Configuración de Detección y Video ---
-ANCHO_PROCESAMIENTO = 640
-FPS_ESPERADO = 15  # FPS para la grabación de video
+# Optimizado para Raspberry Pi 4 - reducir carga de procesamiento
+ANCHO_PROCESAMIENTO = 320  # Reducido de 640 para mejor rendimiento en RPi4
+FPS_ESPERADO = 10  # Reducido de 15 para evitar sobrecarga
 
 SEGUNDOS_PRE_ROLL = 1.0   # Segundos a guardar ANTES de la detección
-SEGUNDOS_POST_ROLL = 9.0  # Segundos a grabar DESPUÉS de la detección
+SEGUNDOS_POST_ROLL = 6.0  # Reducido de 9.0 para videos más cortos
 
 # Tamaño del búfer (cuántos fotogramas guardar en RAM)
 TAMAÑO_BUFFER = int(FPS_ESPERADO * SEGUNDOS_PRE_ROLL)

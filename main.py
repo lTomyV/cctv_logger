@@ -65,26 +65,30 @@ def main():
             if estado_grabacion == "IDLE":
                 buffer_preroll.append(fotograma_proc_bgr)
 
-            # 3. DETECCIÓN CON MEDIAPIPE
-            fotograma_proc_rgb = cv2.cvtColor(fotograma_proc_bgr, cv2.COLOR_BGR2RGB)
-            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=fotograma_proc_rgb)
-            frame_timestamp_ms += 1 
-            
-            objeto_detectado = False
-            try:
-                detection_result = detector.detect_for_video(mp_image, frame_timestamp_ms)
-                for detection in detection_result.detections:
-                    # Si hay alguna detección, consideramos que hay un objeto
-                    objeto_detectado = True
-                    bbox = detection.bounding_box
-                    cv2.rectangle(
-                        fotograma_proc_bgr,
-                        (bbox.origin_x, bbox.origin_y),
-                        (bbox.origin_x + bbox.width, bbox.origin_y + bbox.height),
-                        (0, 255, 0), 2
-                    )
-            except Exception as e:
-                print(f"Error en MediaPipe detect_for_video: {e}")
+            # 3. DETECCIÓN CON MEDIAPIPE (optimizado para RPi4)
+            # Procesar cada 2 frames para reducir carga (skip frame)
+            if frame_timestamp_ms % 2 == 0:  # Procesar solo frames pares
+                fotograma_proc_rgb = cv2.cvtColor(fotograma_proc_bgr, cv2.COLOR_BGR2RGB)
+                mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=fotograma_proc_rgb)
+                frame_timestamp_ms += 1 
+                
+                objeto_detectado = False
+                try:
+                    detection_result = detector.detect_for_video(mp_image, frame_timestamp_ms)
+                    for detection in detection_result.detections:
+                        # Si hay alguna detección, consideramos que hay un objeto
+                        objeto_detectado = True
+                        bbox = detection.bounding_box
+                        cv2.rectangle(
+                            fotograma_proc_bgr,
+                            (bbox.origin_x, bbox.origin_y),
+                            (bbox.origin_x + bbox.width, bbox.origin_y + bbox.height),
+                            (0, 255, 0), 2
+                        )
+                except Exception as e:
+                    print(f"Error en MediaPipe detect_for_video: {e}")
+            else:
+                objeto_detectado = False  # No detectar en frames impares
 
             # 4. LÓGICA DE GRABACIÓN
             tiempo_actual = time.time()
@@ -219,7 +223,7 @@ def main():
 
             # 5. DEBUG VISUAL Y SALIDA
             cv2.imshow("Feed - Presiona 'q' para salir", fotograma_proc_bgr)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if cv2.waitKey(50) & 0xFF == ord('q'):  # Aumentado de 1ms a 50ms para reducir CPU
                 print("Saliendo por petición del usuario...")
                 break
 
