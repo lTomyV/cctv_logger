@@ -1,3 +1,20 @@
 # Ignore credentials containing secrets
 credentials.json
 
+# Modelos de IA (se descargan automáticamente)
+*.tflite
+efficientdet_lite0.tflite
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Archivos temporales generados por el script
+alerta_*.mp4
+alerta_*.webm
+alerta_*.avi
+thumb_*.jpg
+mejor_frame_*.jpg
+
