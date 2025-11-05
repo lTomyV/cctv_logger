@@ -48,7 +48,7 @@ FRAMES_A_GRABAR_POST = int(FPS_ESPERADO * SEGUNDOS_POST_ROLL)
 
 # --- Configuración del Modelo de IA ---
 MODEL_PATH = os.path.join(_DIR_BASE, 'efficientdet_lite0.tflite')
-UMBRAL_CONFIANZA_OBJETO = 0.80 # Confianza mínima (50%)
+UMBRAL_CONFIANZA_OBJETO = 0.60 # Confianza mínima (60%)
 
 # --- Configuración de Alertas ---
 COOLDOWN_SEGUNDOS = 20 # Esperar 20s entre alertas

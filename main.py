@@ -101,19 +101,45 @@ def main():
                 
                 timestamp_str = str(int(tiempo_actual))
                 
-                # Usamos códec H.264 y .mp4 para compatibilidad con Telegram y Discord
+                # Usamos códec para MP4 compatible con Telegram y Discord
                 nombre_video = f"alerta_{timestamp_str}.mp4" 
                 nombre_thumb = f"thumb_{timestamp_str}.jpg"
                 archivos_para_envio = (nombre_video, nombre_thumb) 
-
-                fourcc = cv2.VideoWriter.fourcc(*'mp4v')  # H.264 codec para mp4
                 
                 if buffer_preroll:
                     cv2.imwrite(nombre_thumb, buffer_preroll[0])
                 else:
                     cv2.imwrite(nombre_thumb, fotograma_proc_bgr) # Fallback
 
-                video_out = cv2.VideoWriter(nombre_video, fourcc, config.FPS_ESPERADO, DIMENSIONES_VIDEO)
+                # Probar diferentes códecs en orden de preferencia para MP4
+                codecs_para_probar = [
+                    ('H264', 'MP4 con H.264 alternativo'),
+                    ('avc1', 'MP4 con H.264'),
+                    ('mp4v', 'MP4 con MPEG-4'),
+                    ('XVID', 'AVI con XVID como fallback')
+                ]
+                
+                video_out = None
+                for codec_str, descripcion in codecs_para_probar:
+                    fourcc = cv2.VideoWriter.fourcc(*codec_str)
+                    nombre_archivo = nombre_video if codec_str != 'XVID' else f"alerta_{timestamp_str}.avi"
+                    
+                    video_out = cv2.VideoWriter(nombre_archivo, fourcc, config.FPS_ESPERADO, DIMENSIONES_VIDEO)
+                    
+                    if video_out.isOpened():
+                        print(f"VideoWriter creado exitosamente con códec {codec_str} ({descripcion})")
+                        if codec_str == 'XVID':
+                            # Actualizar nombre del archivo si usamos AVI
+                            archivos_para_envio = (nombre_archivo, nombre_thumb)
+                        break
+                    else:
+                        video_out.release()
+                        video_out = None
+                
+                if video_out is None:
+                    print(f"ERROR: No se pudo crear el VideoWriter con ningún códec. Saltando grabación.")
+                    estado_grabacion = "IDLE"
+                    continue
 
                 print(f"Volcando {len(buffer_preroll)} fotogramas de pre-roll...")
                 for frame in buffer_preroll:
@@ -129,8 +155,12 @@ def main():
                 if frames_grabados_post >= config.FRAMES_A_GRABAR_POST:
                     print(f"Grabación post-roll terminada. {frames_grabados_post} fotogramas escritos.")
                     
-                    video_out.release()
-                    video_out = None
+                    # Cerrar el video correctamente y asegurar que se escriba todo
+                    if video_out is not None:
+                        video_out.release()
+                        video_out = None
+                        # Pequeño delay para asegurar que el archivo se escriba completamente
+                        time.sleep(0.1)
                     if archivos_para_envio is not None:
                         print(f"Video '{archivos_para_envio[0]}' guardado.")
 
