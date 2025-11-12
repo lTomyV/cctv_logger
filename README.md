@@ -171,10 +171,6 @@ Las alertas incluyen:
 - Revisa los logs para ver mensajes de error específicos
 - Verifica tu conexión a Internet
 
-## 📄 Licencia
-
-[Especificar licencia si es necesario]
-
 ## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas. Por favor, abre un issue o pull request para cualquier mejora.
