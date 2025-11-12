@@ -15,7 +15,7 @@ sudo apt install -y libgtk-3-dev libcanberra-gtk3-module libcanberra-gtk-module
 
 # Instalar OpenCV optimizado para Raspberry Pi
 echo "Instalando OpenCV..."
-pip3 install opencv-python-headless
+pip3 install "opencv-python-headless>=4.8.0"
 
 # Instalar TensorFlow Lite (requerido por MediaPipe)
 echo "Instalando TensorFlow Lite..."
@@ -23,11 +23,11 @@ pip3 install tflite-runtime
 
 # Instalar MediaPipe
 echo "Instalando MediaPipe..."
-pip3 install mediapipe
+pip3 install "mediapipe>=0.10.0"
 
 # Instalar otras dependencias
 echo "Instalando dependencias Python..."
-pip3 install requests numpy
+pip3 install "requests>=2.28.0" "numpy>=1.21.0"
 
 # Verificar instalación
 echo "Verificando instalación..."

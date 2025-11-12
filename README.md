@@ -17,6 +17,10 @@ Sistema de monitoreo de seguridad que detecta objetos en tiempo real mediante un
 ## 📋 Requisitos
 
 - Python 3.8 o superior
+- opencv-python>=4.8.0
+- mediapipe>=0.10.0
+- requests>=2.28.0
+- numpy>=1.21.0
 - Cámara conectada (webcam o cámara USB)
 - Conexión a Internet (para descargar el modelo y enviar alertas)
 
